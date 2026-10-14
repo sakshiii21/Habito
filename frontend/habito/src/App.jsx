@@ -1,25 +1,26 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import AddHabit from "./components/AddHabit.jsx";
 import HabitList from "./components/HabitList.jsx";
+import { apiBaseUrl } from "./config.js";
 
 function App() {
   const [newHabit, CreateNewHabit] = useState("");
   const [Habits, ChangeHabits] = useState([]);
 
-  useEffect(() => {
-    fetchHabits();
-  }, []);
-
-  function fetchHabits() {
-    fetch("http://localhost:5000/habits")
+  const fetchHabits = useCallback(() => {
+    fetch(`${apiBaseUrl}/habits`)
       .then((res) => res.json())
       .then((data) => ChangeHabits(data));
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchHabits();
+  }, [fetchHabits]);
 
   function AddnewHabit() {
     if (!newHabit) return;
 
-    fetch("http://localhost:5000/habits", {
+    fetch(`${apiBaseUrl}/habits`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -32,14 +33,14 @@ function App() {
   }
 
   function DeleteThisHabit(id) {
-    fetch(`http://localhost:5000/habits/${id}`, {
+    fetch(`${apiBaseUrl}/habits/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     }).then(() => fetchHabits());
   }
 
   function ToggleHabit(id) {
-    fetch(`http://localhost:5000/habits/${id}`, {
+    fetch(`${apiBaseUrl}/habits/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     }).then(() => fetchHabits());
